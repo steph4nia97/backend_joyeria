@@ -1,6 +1,8 @@
 package com.primosjoyeria.backend.service;
 
 import com.primosjoyeria.backend.dto.DolarDto;
+import com.primosjoyeria.backend.dto.MindicadorDolarItem;
+import com.primosjoyeria.backend.dto.MindicadorDolarResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,26 +14,22 @@ public class IndicadoresService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public DolarDto obtenerDolar() {
+    public DolarDto obtenerDolarActual() {
         String url = "https://mindicador.cl/api/dolar";
 
-        // La respuesta es un JSON con un array "serie"
-        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+        MindicadorDolarResponse response =
+                restTemplate.getForObject(url, MindicadorDolarResponse.class);
 
-        if (response == null || !response.containsKey("serie")) {
-            throw new RuntimeException("No se pudo obtener el valor del dólar");
+        if (response == null || response.getSerie() == null || response.getSerie().isEmpty()) {
+            throw new IllegalStateException("Respuesta inválida desde mindicador.cl");
         }
 
-        List<Map<String, Object>> serie = (List<Map<String, Object>>) response.get("serie");
-        if (serie.isEmpty()) {
-            throw new RuntimeException("No hay datos en la serie del dólar");
-        }
+        MindicadorDolarItem item = response.getSerie().get(0);
 
-        Map<String, Object> primerValor = serie.get(0);
-
-        double valor = ((Number) primerValor.get("valor")).doubleValue();
-        String fecha = (String) primerValor.get("fecha");
-
-        return new DolarDto(valor, fecha);
+        return new DolarDto(
+                item.getValor(),
+                item.getFecha()
+        );
     }
+
 }

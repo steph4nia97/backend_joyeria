@@ -1,5 +1,7 @@
 package com.primosjoyeria.backend.dto;
 
+
+
 public class DolarDto {
     private double valor;
     private String fecha;
@@ -17,3 +19,4 @@ public class DolarDto {
         return fecha;
     }
 }
+

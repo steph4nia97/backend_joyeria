@@ -1,8 +1,9 @@
 package com.primosjoyeria.backend.controller;
 
+import com.primosjoyeria.backend.dto.ProductoDto;
 import com.primosjoyeria.backend.dto.ProductoRequest;
-import com.primosjoyeria.backend.entity.Producto;
-import com.primosjoyeria.backend.repository.ProductoRepository;
+import com.primosjoyeria.backend.service.ProductoService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,49 +14,31 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ProductoController {
 
-    private final ProductoRepository productoRepository;
+    private final ProductoService service;
 
-    public ProductoController(ProductoRepository productoRepository) {
-        this.productoRepository = productoRepository;
+    public ProductoController(ProductoService service) {
+        this.service = service;
     }
 
-    // Listar todos (clientes y admin)
     @GetMapping
-    public List<Producto> listar() {
-        return productoRepository.findAll();
+    public List<ProductoDto> listar() {
+        return service.listar();
     }
 
-    // Crear producto (admin)
     @PostMapping
-    public ResponseEntity<Producto> crear(@RequestBody ProductoRequest request) {
-        Producto producto = new Producto();
-        producto.setNombre(request.getNombre());
-        producto.setPrecio(request.getPrecio());
-
-        Producto guardado = productoRepository.save(producto);
-        return ResponseEntity.ok(guardado);
+    public ResponseEntity<ProductoDto> crear(@RequestBody ProductoRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.crear(request));
     }
 
-    // Actualizar producto (admin)
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody ProductoRequest request) {
-        return productoRepository.findById(id)
-                .map(prod -> {
-                    prod.setNombre(request.getNombre());
-                    prod.setPrecio(request.getPrecio());
-                    Producto actualizado = productoRepository.save(prod);
-                    return ResponseEntity.ok(actualizado);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ProductoDto> actualizar(@PathVariable Long id,
+                                                  @RequestBody ProductoRequest request) {
+        return ResponseEntity.ok(service.actualizar(id, request));
     }
 
-    // Eliminar producto (admin)
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id) {
-        if (!productoRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        productoRepository.deleteById(id);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        service.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 }
