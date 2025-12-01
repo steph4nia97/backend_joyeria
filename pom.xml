@@ -26,6 +26,7 @@
 
     <dependencies>
 
+
         <!-- Spring Web (REST API) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -59,7 +60,11 @@
             <artifactId>oraclepki</artifactId>
             <version>21.10.0.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.oracle.database.security</groupId>
             <artifactId>osdt_core</artifactId>
@@ -85,6 +90,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>
